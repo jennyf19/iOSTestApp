@@ -34,5 +34,19 @@
     <string>iOSTest</string>
     <key>XSAppIconAssets</key>
     <string>Assets.xcassets/AppIcon.appiconset</string>
+
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLName</key>
+      <string>com.yourcompany.UserDetailsClient</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>msal1eeb92d5-7a3d-4a4d-a65b-14431b2e4fc2</string>
+      </array>
+    </dict>
+  </array>
 </dict>
 </plist>
