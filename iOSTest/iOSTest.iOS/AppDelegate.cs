@@ -25,8 +25,6 @@ namespace iOSTest.iOS
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 
-            App.UiParent = new Microsoft.Identity.Client.UIParent();
-
             return base.FinishedLaunching(app, options);
         }
     }
