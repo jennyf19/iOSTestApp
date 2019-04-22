@@ -26,7 +26,8 @@ namespace iOSTest
                 IEnumerable<IAccount> accounts = await App.PCA.GetAccountsAsync();
                 IAccount firstAccount = accounts.FirstOrDefault();
                 AuthenticationResult ar =
-                    await App.PCA.AcquireTokenSilentAsync(App.Scopes, firstAccount);
+                    await App.PCA.AcquireTokenSilent(App.Scopes, firstAccount)
+                    .ExecuteAsync();
                 await RefreshUserDataAsync(ar.AccessToken);
                 Device.BeginInvokeOnMainThread(() => { btnSignInSignOut.Text = "Sign out"; });
             }
@@ -42,7 +43,9 @@ namespace iOSTest
             {
                 if (btnSignInSignOut.Text == "Sign in")
                 {
-                    AuthenticationResult ar = await App.PCA.AcquireTokenAsync(App.Scopes, App.UiParent);
+                    AuthenticationResult ar = await App.PCA.AcquireTokenInteractive(App.Scopes)
+                        .WithUseEmbeddedWebView(true)
+                        .ExecuteAsync();
                     await RefreshUserDataAsync(ar.AccessToken);
                     Device.BeginInvokeOnMainThread(() => { btnSignInSignOut.Text = "Sign out"; });
                 }

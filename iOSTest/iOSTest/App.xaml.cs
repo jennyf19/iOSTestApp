@@ -8,7 +8,7 @@ namespace iOSTest
 {
     public partial class App : Application
     {
-        public static PublicClientApplication PCA = null;
+        public static IPublicClientApplication PCA = null;
 
         /// <summary>
         /// The ClientID is the Application ID found in the portal (https://apps.dev.microsoft.com). 
@@ -19,14 +19,14 @@ namespace iOSTest
         public static string[] Scopes = { "User.Read" };
         public static string Username = string.Empty;
 
-        public static UIParent UiParent { get; set; }
+        public static object ParentActivityOrWindow { get; set; }
 
         public App()
         {
-            PCA = new PublicClientApplication(ClientID)
-            {
-                RedirectUri = $"msal{App.ClientID}://auth",
-            };
+            PCA = PublicClientApplicationBuilder.Create(ClientID)
+                .WithRedirectUri($"msal{App.ClientID}://auth")
+                .Build();
+
 
             MainPage = new NavigationPage(new MainPage());
         }
