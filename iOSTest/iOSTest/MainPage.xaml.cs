@@ -59,9 +59,9 @@ namespace iOSTest
                     Device.BeginInvokeOnMainThread(() => { btnSignInSignOut.Text = "Sign in"; });
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                lblDisplayName.Text = ex.Message;
             }
         }
 
