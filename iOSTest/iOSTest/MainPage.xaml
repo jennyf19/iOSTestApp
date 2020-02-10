@@ -31,6 +31,7 @@
             </StackLayout>
             <BoxView Color="Transparent" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
             <Button x:Name="btnSignInSignOut" Text="Sign in" Clicked="OnSignInSignOut" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+            <Button x:Name="btnB2CSignInSignOut" Text="B2C Sign in" Clicked="OnB2CSignInSignOut" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
         </StackLayout>
     </ContentPage.Content>
 
