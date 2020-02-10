@@ -20,7 +20,7 @@ namespace iOSTest
         protected override async void OnAppearing()
 #pragma warning restore AvoidAsyncVoid
         {
-            // let's see if we have a user in our belly already
+            // let's see if we have a user in the cache
             try
             {
                 IEnumerable<IAccount> accounts = await App.PCA.GetAccountsAsync();
@@ -44,7 +44,6 @@ namespace iOSTest
                 if (btnSignInSignOut.Text == "Sign in")
                 {
                     AuthenticationResult ar = await App.PCA.AcquireTokenInteractive(App.Scopes)
-                        .WithUseEmbeddedWebView(true)
                         .ExecuteAsync();
                     await RefreshUserDataAsync(ar.AccessToken);
                     Device.BeginInvokeOnMainThread(() => { btnSignInSignOut.Text = "Sign out"; });
@@ -62,6 +61,83 @@ namespace iOSTest
             catch (Exception ex)
             {
                 lblDisplayName.Text = ex.Message;
+            }
+        }
+
+        async void OnB2CSignInSignOut(object sender, EventArgs e)
+        {
+            IPublicClientApplication pca;
+            var builder = PublicClientApplicationBuilder.Create(App.B2cClientId)
+               .WithB2CAuthority(App.AuthoritySignInSignUp)
+               .WithIosKeychainSecurityGroup("com.microsoft.adalcache")
+               .WithRedirectUri($"msal{App.B2cClientId}://auth");
+            pca = builder.Build();
+            try
+            {
+                if (btnB2CSignInSignOut.Text == "B2C Sign in")
+                {
+                    AuthenticationResult ar = await pca.AcquireTokenInteractive(App.B2cScopes)
+                        .WithB2CAuthority(App.AuthoritySignInSignUp)
+                        .WithPrompt(Prompt.NoPrompt)
+                        .ExecuteAsync();
+                    await CallB2CWebApi(ar.AccessToken);
+                    Device.BeginInvokeOnMainThread(() => { btnSignInSignOut.Text = "Sign out"; });
+                }
+                else
+                {
+                    IEnumerable<IAccount> accounts = await pca.GetAccountsAsync();
+                    while (accounts.Any())
+                    {
+                        await pca.RemoveAsync(accounts.FirstOrDefault());
+                        accounts = await pca.GetAccountsAsync();
+                    }
+
+                    slUser.IsVisible = false;
+                    Device.BeginInvokeOnMainThread(() => { btnSignInSignOut.Text = "B2C Sign in"; });
+                }
+            }
+            catch (Exception ex)
+            {
+                lblDisplayName.Text = ex.Message;
+            }
+        }
+
+        private IAccount GetAccountByPolicy(IEnumerable<IAccount> accounts, string policy)
+        {
+            foreach (var account in accounts)
+            {
+                string userIdentifier = account.HomeAccountId.ObjectId.Split('.')[0];
+                if (userIdentifier.EndsWith(policy.ToLower())) return account;
+            }
+
+            return null;
+        }
+
+        public async Task CallB2CWebApi(string token)
+        {
+            //get data from API
+            HttpClient client = new HttpClient();
+            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, App.ApiEndpoint);
+            message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await client.SendAsync(message);
+            string responseString = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                JObject user = JObject.Parse(responseString);
+
+                slUser.IsVisible = true;
+
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    lblDisplayName.Text = user["name"].ToString();
+
+                    // just in case
+                    btnSignInSignOut.Text = "Sign out";
+                });
+            }
+            else
+            {
+                await DisplayAlert("Something went wrong with the API call", responseString, "Dismiss");
             }
         }
 

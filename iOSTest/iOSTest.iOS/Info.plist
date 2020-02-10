@@ -41,10 +41,11 @@
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLName</key>
-      <string>com.yourcompany.UserDetailsClient</string>
+      <string>com.yourcompany.iOSTest</string>
       <key>CFBundleURLSchemes</key>
       <array>
         <string>msal1eeb92d5-7a3d-4a4d-a65b-14431b2e4fc2</string>
+        <string>msale5737214-6372-472c-a85a-68e8fbe6cf3c</string>
       </array>
     </dict>
   </array>
